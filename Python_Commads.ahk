@@ -1,4 +1,4 @@
-﻿; =============================================================
+; =============================================================
 ; 🔄 AUTO-RECARGA + TOOLTIP + SONIDO (PYTHON AHK)
 ; =============================================================
 
@@ -44,6 +44,30 @@ return
 #UseHook
 SendMode Input
 #MaxThreadsPerHotkey 1
+;■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+; -------------------------------------------------------------
+; Ctrl+G — commit + push a GitHub
+; -------------------------------------------------------------
+^g::
+    FormatTime, ts,, yyyy-MM-dd_HH-mm-ss
+    repoPath := "C:\Users\JOSUE BG\Documents\autohotkeys\Comandos Globales AHK"
+    cmd := "git -C """ . repoPath . """ add -A && git -C """ . repoPath . """ commit -m ""auto_" . ts . """ && git -C """ . repoPath . """ push"
+    Run, cmd /c %cmd%, , Hide
+    ToolTip, ⏳ Guardando en GitHub...
+    SetTimer, _CheckGitDone, -3000
+return
+
+_CheckGitDone:
+    ToolTip, ✅ GitHub actualizado
+    SoundPlay, %A_WinDir%\Media\Windows Navigation Start.wav
+    SetTimer, QuitarToolTip, -2000
+return
+
+QuitarToolTip:
+    ToolTip
+return
+
 ;■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
 ; 🚀 Alt + P → Pegar paquete de librerías Encoders de Python

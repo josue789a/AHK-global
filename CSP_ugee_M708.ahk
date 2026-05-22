@@ -1,5 +1,5 @@
 ﻿; ┌─────────────────────────────────────────────────────────┐
-; │  🎨 CSP ugee M708 — SCRIPT PRINCIPAL  (v17)             │
+; │  🎨 CSP ugee M708 — SCRIPT PRINCIPAL  (v16)             │
 ; │                                                         │
 ; │  1. DIRECTIVAS GLOBALES                                 │
 ; │  2. VARIABLES GLOBALES                                  │
@@ -9,7 +9,7 @@
 ; │     a) Selección y reselección                          │
 ; │     b) Deshacer / Rehacer                               │
 ; │     c) Herramientas (A E W Q S O V R)                   │
-; │     d) Atajos con clic derecho                          │
+; │     d) Atajos con clic derecho                                 │
 ; │     e) Modificadores de capa                            │
 ; │  6. FUNCIONES                                           │
 ; └─────────────────────────────────────────────────────────┘
@@ -104,10 +104,6 @@ global _arActivo  := false
 global _arOculto  := false
 global _arVisible := false
 
-; --- Acceso rápido emergente (Alt+Q de CSP) ---
-global _ar2ID      := 0
-global _ar2Visible := false
-
 
 
 ; ┌──────────────────────────────────────────────────────────────────────┐
@@ -119,7 +115,6 @@ SetTimer, ChequearZonaHistorial, 200
 SetTimer, ChequearZonaAltA,       30
 SetTimer, LoopColorV,             40
 SetTimer, LoopAccesoRapido,       40
-SetTimer, LoopAccesoRapidoEmerg,  40
 return
 
 ; -------------------------------------------------------------
@@ -137,8 +132,9 @@ CheckReload:
         x := (A_ScreenWidth  // 2) - 120
         y := (A_ScreenHeight // 2) - 20
         ToolTip, 💾 Script actualizado y recargado, %x%, %y%
-        SoundPlay, %A_WinDir%\Media\Windows Battery Low.wav, wait
-        SoundPlay, %A_WinDir%\Media\Windows Navigation Start.wav
+        SoundBeep, 750, 180
+        SoundBeep, 950, 180
+        SoundBeep, 850, 180
         Sleep, 300
         ToolTip
         Reload
@@ -204,28 +200,6 @@ return
 LoopColorV:
     if (!_vActivo || _vOculto)
         return
-    if !WinActive("ahk_exe CLIPStudioPaint.exe")
-    {
-        if (_dsVisible) {
-            _dsVisible := false
-            WinSet, Transparent, 1,    ahk_id %_dsID%
-            WinSet, ExStyle,    +0x20, ahk_id %_dsID%
-        }
-        if (_ccVisible) {
-            _ccVisible := false
-            WinSet, Transparent, 1,    ahk_id %_ccID%
-            WinSet, ExStyle,    +0x20, ahk_id %_ccID%
-        }
-        Gui, BordeDS_T:Hide
-        Gui, BordeDS_B:Hide
-        Gui, BordeDS_L:Hide
-        Gui, BordeDS_R:Hide
-        Gui, BordeCC_T:Hide
-        Gui, BordeCC_B:Hide
-        Gui, BordeCC_L:Hide
-        Gui, BordeCC_R:Hide
-        return
-    }
 
     MouseGetPos, mx, my
 
@@ -252,10 +226,10 @@ LoopColorV:
             if (_dsVisible)
             {
                 _dsVisible := false
-                WinSet, Transparent, 1,    ahk_id %_dsID%
+                WinSet, Transparent, 5,    ahk_id %_dsID%
                 WinSet, ExStyle,    +0x20, ahk_id %_dsID%
             }
-            g := 1
+            g := 2
             Gui, BordeDS_T:Show, % "x" dsX         " y" dsY         " w" dsW " h" g   " NoActivate"
             Gui, BordeDS_B:Show, % "x" dsX         " y" (dsY+dsH-g) " w" dsW " h" g   " NoActivate"
             Gui, BordeDS_L:Show, % "x" dsX         " y" dsY         " w" g   " h" dsH " NoActivate"
@@ -296,10 +270,10 @@ LoopColorV:
             if (_ccVisible)
             {
                 _ccVisible := false
-                WinSet, Transparent, 1,    ahk_id %_ccID%
+                WinSet, Transparent, 5,    ahk_id %_ccID%
                 WinSet, ExStyle,    +0x20, ahk_id %_ccID%
             }
-            g := 1
+            g := 2
             Gui, BordeCC_T:Show, % "x" ccX         " y" ccY         " w" ccW " h" g   " NoActivate"
             Gui, BordeCC_B:Show, % "x" ccX         " y" (ccY+ccH-g) " w" ccW " h" g   " NoActivate"
             Gui, BordeCC_L:Show, % "x" ccX         " y" ccY         " w" g   " h" ccH " NoActivate"
@@ -326,19 +300,6 @@ return
 LoopAccesoRapido:
     if (!_arActivo || _arOculto)
         return
-    if !WinActive("ahk_exe CLIPStudioPaint.exe")
-    {
-        if (_arVisible) {
-            _arVisible := false
-            WinSet, Transparent, 1,    ahk_id %_arID%
-            WinSet, ExStyle,    +0x20, ahk_id %_arID%
-        }
-        Gui, BordeAR_T:Hide
-        Gui, BordeAR_B:Hide
-        Gui, BordeAR_L:Hide
-        Gui, BordeAR_R:Hide
-        return
-    }
     if (!WinExist("ahk_id " _arID))
     {
         _arActivo  := false
@@ -375,78 +336,14 @@ LoopAccesoRapido:
     if (_arVisible)
     {
         _arVisible := false
-        WinSet, Transparent, 1,    ahk_id %_arID%
+        WinSet, Transparent, 5,    ahk_id %_arID%
         WinSet, ExStyle,    +0x20, ahk_id %_arID%
     }
-    g := 1
+    g := 2
     Gui, BordeAR_T:Show, % "x" arX         " y" arY         " w" arW " h" g   " NoActivate"
     Gui, BordeAR_B:Show, % "x" arX         " y" (arY+arH-g) " w" arW " h" g   " NoActivate"
     Gui, BordeAR_L:Show, % "x" arX         " y" arY         " w" g   " h" arH " NoActivate"
     Gui, BordeAR_R:Show, % "x" (arX+arW-g) " y" arY         " w" g   " h" arH " NoActivate"
-return
-
-; -------------------------------------------------------------
-; LoopAccesoRapidoEmerg — hover para el acceso rápido emergente (Alt+Q)
-;   Solo afecta ventanas con título [Acceso rápido] que no sean _arID
-;   F y otros emergentes sin ese título no son tocados
-; -------------------------------------------------------------
-LoopAccesoRapidoEmerg:
-    if !WinActive("ahk_exe CLIPStudioPaint.exe")
-    {
-        if (_ar2Visible) {
-            _ar2Visible := false
-            WinSet, Transparent, 1, ahk_id %_ar2ID%
-        }
-        return
-    }
-    WinGet, _ar2List, List, ahk_exe CLIPStudioPaint.exe
-    Loop, %_ar2List%
-    {
-        _ar2Tmp := _ar2List%A_Index%
-        if (_ar2Tmp = _arID)
-            continue
-        WinGetTitle, _ar2T, ahk_id %_ar2Tmp%
-        if (InStr(_ar2T, "Acceso r") && InStr(_ar2T, "pido"))
-        {
-            _ar2ID := _ar2Tmp
-            break
-        }
-        _ar2ID := 0
-    }
-
-    if (!_ar2ID)
-    {
-        _ar2Visible := false
-        return
-    }
-
-    WinGetPos, ar2X, ar2Y, ar2W, ar2H, ahk_id %_ar2ID%
-    MouseGetPos, mx, my
-    dentro2 := (mx >= ar2X && mx <= ar2X+ar2W && my >= ar2Y && my <= ar2Y+ar2H)
-
-    if (dentro2)
-    {
-        if (!_ar2Visible)
-        {
-            _ar2Visible := true
-            WinSet, Transparent, 255,  ahk_id %_ar2ID%
-            WinSet, ExStyle,    -0x20, ahk_id %_ar2ID%
-        }
-    }
-    else
-    {
-        if (_ar2Visible)
-        {
-            _ar2Visible := false
-            WinSet, Transparent, 1,    ahk_id %_ar2ID%
-        }
-        else
-        {
-            ; Primera detección fuera del área — poner opaco de entrada
-            WinSet, Transparent, 255,  ahk_id %_ar2ID%
-            WinSet, ExStyle,    -0x20, ahk_id %_ar2ID%
-        }
-    }
 return
 
 
@@ -530,17 +427,31 @@ return
 ; -------------------------------------------------------------
 ^s::
     SendInput, ^s
+    SoundBeep, 600, 100
+    SoundBeep, 900, 150
     ToolTip, 💾 GUARDADO Y MODIFICADO 💾
     SetTimer, QuitarToolTip, -800
-    SetTimer, BeepGuardado, -50
-return
-
-BeepGuardado:
-    SoundPlay, %A_WinDir%\Media\Windows Battery Low.wav, wait
-    SoundPlay, %A_WinDir%\Media\Windows Navigation Start.wav
 return
 
 ; -------------------------------------------------------------
+; -------------------------------------------------------------
+; Ctrl+G — commit + push a GitHub
+; -------------------------------------------------------------
+^g::
+    FormatTime, ts,, yyyy-MM-dd_HH-mm-ss
+    repoPath := "C:\Users\JOSUE BG\Documents\autohotkeys\Comandos Globales AHK"
+    cmd := "git -C """ . repoPath . """ add -A && git -C """ . repoPath . """ commit -m ""auto_" . ts . """ && git -C """ . repoPath . """ push"
+    Run, cmd /c %cmd%, , Hide
+    ToolTip, ⏳ Guardando en GitHub...
+    SetTimer, _CheckGitDone, -3000
+return
+
+_CheckGitDone:
+    ToolTip, ✅ GitHub actualizado
+    SoundPlay, %A_WinDir%\Media\Windows Navigation Start.wav
+    SetTimer, QuitarToolTip, -2000
+return
+
 ; ~!b / ~!b up — stylus Alt+B
 ; -------------------------------------------------------------
 ~!b::    stylusAltActive := true
@@ -645,7 +556,7 @@ return
 
 !a::
     Send, ñ
-    ToolTip, CAPA REFERIDA (3)
+    ToolTip, CAPA REFERIDA
     SetTimer, QuitarToolTip, -2300
 return
 
@@ -783,24 +694,20 @@ return
 
 AlternarEstabilizacion:
     if (estadoEstabilizacion = 0) {
+        SendInput, {Blind}{- 63}
         estadoEstabilizacion := 1
-        mensaje   := "🟢 Estabilización Alta"
-        duracionTT := 1600
+        mensaje    := "🟢 Estabilización Alta"
+        frecuencia := 1200
     } else {
+        SendInput, {Blind}{j 63}
         estadoEstabilizacion := 0
-        mensaje   := "🔵 Estabilización Baja"
-        duracionTT := 400
-        SoundPlay, %A_WinDir%\Media\Windows Battery Low.wav
+        mensaje    := "🔵 Estabilización Baja"
+        frecuencia := 500
     }
+    Sleep, 10
     ToolTip, %mensaje%
-    SetTimer, OcultarToolTipQ, -%duracionTT%
-    if (estadoEstabilizacion = 1) {
-        SetKeyDelay, -1, -1
-        SendEvent, {Blind}{- 64}
-    } else {
-        SetKeyDelay, -1, -1
-        SendEvent, {Blind}{j 64}
-    }
+    SetTimer, OcultarToolTipQ, -800
+    SoundBeep, %frecuencia%, 300
 return
 
 OcultarToolTipQ:
@@ -841,19 +748,15 @@ return
         Gui, BordeAR_T:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeAR_T:Color, %color%
         Gui, BordeAR_T:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeAR_T
         Gui, BordeAR_B:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeAR_B:Color, %color%
         Gui, BordeAR_B:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeAR_B
         Gui, BordeAR_L:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeAR_L:Color, %color%
         Gui, BordeAR_L:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeAR_L
         Gui, BordeAR_R:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeAR_R:Color, %color%
         Gui, BordeAR_R:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeAR_R
         ToolTip, ACCESO RAPIDO - modo hover ON
         SetTimer, QuitarToolTip, -1200
         return
@@ -868,7 +771,7 @@ return
         Gui, BordeAR_B:Hide
         Gui, BordeAR_L:Hide
         Gui, BordeAR_R:Hide
-        WinSet, Transparent, 1,    ahk_id %_arID%
+        WinSet, Transparent, 5,    ahk_id %_arID%
         WinSet, ExStyle,    +0x20, ahk_id %_arID%
         _arVisible := false
         ToolTip, ACCESO RAPIDO - oculto
@@ -1000,37 +903,29 @@ v::
         Gui, BordeDS_T:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeDS_T:Color, %color1%
         Gui, BordeDS_T:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeDS_T
         Gui, BordeDS_B:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeDS_B:Color, %color1%
         Gui, BordeDS_B:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeDS_B
         Gui, BordeDS_L:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeDS_L:Color, %color1%
         Gui, BordeDS_L:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeDS_L
         Gui, BordeDS_R:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeDS_R:Color, %color1%
         Gui, BordeDS_R:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeDS_R
 
         color2 := "00CC66"
         Gui, BordeCC_T:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeCC_T:Color, %color2%
         Gui, BordeCC_T:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeCC_T
         Gui, BordeCC_B:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeCC_B:Color, %color2%
         Gui, BordeCC_B:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeCC_B
         Gui, BordeCC_L:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeCC_L:Color, %color2%
         Gui, BordeCC_L:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeCC_L
         Gui, BordeCC_R:-Caption +AlwaysOnTop +ToolWindow +E0x20
         Gui, BordeCC_R:Color, %color2%
         Gui, BordeCC_R:Show, w0 h0 NoActivate
-        WinSet, Transparent, 180, BordeCC_R
     }
 
     ; ── 2do tap+: toggle hover ↔ oculto (antes era !v) ─────────────────
@@ -1050,12 +945,12 @@ v::
             Gui, BordeCC_R:Hide
             if (_dsID && WinExist("ahk_id " _dsID))
             {
-                WinSet, Transparent, 1,    ahk_id %_dsID%
+                WinSet, Transparent, 5,    ahk_id %_dsID%
                 WinSet, ExStyle,    +0x20, ahk_id %_dsID%
             }
             if (_ccID && WinExist("ahk_id " _ccID))
             {
-                WinSet, Transparent, 1,    ahk_id %_ccID%
+                WinSet, Transparent, 5,    ahk_id %_ccID%
                 WinSet, ExStyle,    +0x20, ahk_id %_ccID%
             }
             _dsVisible := false
@@ -1069,12 +964,12 @@ v::
             _ccVisible := false
             if (_dsID && WinExist("ahk_id " _dsID))
             {
-                WinSet, Transparent, 1,    ahk_id %_dsID%
+                WinSet, Transparent, 5,    ahk_id %_dsID%
                 WinSet, ExStyle,    -0x20, ahk_id %_dsID%
             }
             if (_ccID && WinExist("ahk_id " _ccID))
             {
-                WinSet, Transparent, 1,    ahk_id %_ccID%
+                WinSet, Transparent, 5,    ahk_id %_ccID%
                 WinSet, ExStyle,    -0x20, ahk_id %_ccID%
             }
         }
@@ -1082,9 +977,9 @@ v::
 
     ; ── Transparencia inicial — el loop toma el control ────────────────
     if (_dsID)
-        WinSet, Transparent, 1, ahk_id %_dsID%
+        WinSet, Transparent, 5, ahk_id %_dsID%
     if (_ccID)
-        WinSet, Transparent, 1, ahk_id %_ccID%
+        WinSet, Transparent, 5, ahk_id %_ccID%
 
     CustomToolTip("🟠 COLOR — hover ON")
 return
