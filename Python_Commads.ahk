@@ -1,5 +1,5 @@
 ; =============================================================
-; 🔄 AUTO-RECARGA + TOOLTIP + SONIDO (PYTHON AHK)
+; 🔄 AUTO-RECARGA + TOOLTIP + SONIDO (PYTHON AHK)               aaaaaaaaaaaaaaaaaaaaaaaaaa
 ; =============================================================
 
 #SingleInstance Force
